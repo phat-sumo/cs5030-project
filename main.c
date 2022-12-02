@@ -44,12 +44,12 @@ int main() {
 			uint32_t sum = 0; 
 
 			for (int y = j - 100; y <= j + 100; y++) {
-				if (y < 0) {
+				if (y < 0 || y >= map.height) {
 					continue;
 				}
 
 				for (int x = i - 100; x <= i + 100; x++) {
-					if (x < 0) {
+					if (x < 0 || y >= map.width) {
 						continue;
 					}
 
@@ -61,10 +61,11 @@ int main() {
 				}
 			}
 
-			printf("total [%d][%d]: %d\n", i, j, sum);
+			//printf("total [%d][%d]: %d\n", i, j, sum);
 			output[map.width * j + i] = sum;
 			
 		}
+		printf("row %4d complete\n", j);
 	}
 
 	clock_gettime(CLOCK_MONOTONIC, &ts_end);
