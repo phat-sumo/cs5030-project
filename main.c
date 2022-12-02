@@ -39,12 +39,20 @@ int main() {
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
 
-	for (int i = 0; i < map.width; i++) {
-		for (int j = 0; j < map.height; j++) {
+	for (int j = 0; j < map.height; j++) {
+		for (int i = 0; i < map.width; i++) {
 			uint32_t sum = 0; 
 
-			for (int x = 0; x < map.width; x++) {
-				for (int y = 0; y < map.height; y++) {
+			for (int y = j - 100; y <= j + 100; y++) {
+				if (y < 0) {
+					continue;
+				}
+
+				for (int x = i - 100; x <= i + 100; x++) {
+					if (x < 0) {
+						continue;
+					}
+
 					if (is_visible(map, i, j, x, y)) {
 						/* printf("found [%d][%d] -> [%d][%d]\n", i, j, x, y); */
 						sum++;
@@ -54,7 +62,7 @@ int main() {
 			}
 
 			printf("total [%d][%d]: %d\n", i, j, sum);
-			output[map.width * i + j] = sum;
+			output[map.width * j + i] = sum;
 			
 		}
 	}
