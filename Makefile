@@ -2,12 +2,13 @@
 
 CC = gcc
 TARGET = AwannaCU
+FLAGS = -O3 -flto -march=native -mtune=native
 WARN = -Wall
 LIBS = -fopenmp
 SRC = main.c bresenham.c bresenham.h
 
 build: 
-	$(CC) -o $(TARGET) $(WARN) $(LIBS) $(SRC)
+	$(CC) -o $(TARGET) $(FLAGS) $(WARN) $(LIBS) $(SRC)
 
 test: 
 	./$(TARGET)
