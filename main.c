@@ -5,6 +5,8 @@
 #include <string.h>
 #include <time.h>
 
+#include <omp.h>
+
 #include "bresenham.h"
 
 int main() {
@@ -38,32 +40,40 @@ int main() {
 	struct timespec ts_end;
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
+	uint32_t sum = 0; 
+	int i, j, x, y;
+	int my_rank, thread_count;
+	for (j = 0; j < map.height; j++) {
+#		pragma omp parallel num_threads(4) private(y, x, sum, my_rank, thread_count)
+		{
+			my_rank = omp_get_thread_num();
+			thread_count = omp_get_num_threads();
 
-	for (int j = 0; j < map.height; j++) {
-		for (int i = 0; i < map.width; i++) {
-			uint32_t sum = 0; 
+			for (i = my_rank; i < map.width; i += thread_count) {
+				sum = 0;
 
-			for (int y = j - 100; y <= j + 100; y++) {
-				if (y < 0 || y >= map.height) {
-					continue;
-				}
-
-				for (int x = i - 100; x <= i + 100; x++) {
-					if (x < 0 || x >= map.width) {
+				for (y = j - 100; y <= j + 100; y++) {
+					if (y < 0 || y >= map.height) {
 						continue;
 					}
 
-					if (is_visible(map, i, j, x, y)) {
-						/* printf("found [%d][%d] -> [%d][%d]\n", i, j, x, y); */
-						sum++;
-					}
-						
-				}
-			}
+					for (x = i - 100; x <= i + 100; x++) {
+						if (x < 0 || x >= map.width) {
+							continue;
+						}
 
-			//printf("total [%d][%d]: %d\n", i, j, sum);
-			output[map.width * j + i] = sum;
-			
+						if (is_visible(map, i, j, x, y)) {
+							/* printf("found [%d][%d] -> [%d][%d]\n", i, j, x, y); */
+							sum++;
+						}
+							
+					}
+				}
+
+				//printf("total [%d][%d]: %d\n", i, j, sum);
+				output[map.width * j + i] = sum;
+				
+			}
 		}
 		printf("row %4d complete\n", j);
 	}
