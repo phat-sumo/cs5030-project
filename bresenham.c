@@ -1,7 +1,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#include "bresenham.h"
 
-void plot_line(int x0, int y0, int x1, int y1, void callback(int x, int y)) {
+bool is_visible(Map map, int x0, int y0, int x1, int y1) {
+
+	short elevation = map.values[map.width * x0 + y0];
+
 	// The absolute difference between the x and y values we're going between.
 	// dy is inverted to make some math simpler.
 	int dx =  abs(x1 - x0);
@@ -17,12 +21,14 @@ void plot_line(int x0, int y0, int x1, int y1, void callback(int x, int y)) {
 	int err = dx + dy;
 
 	while (true) {
-		// this is the function that gets called for every pixel
-		callback(x0, y0);
+		// if we find a taller point than us, we cannot see the destination
+		if (map.values[map.width * x0 + y0] > elevation) {
+			return false;
+		}
 
 		// we've reached our destination
 		if (x0 == x1 && y0 == y1) {
-			break;
+			return true;
 		}
 
 		int e2 = err * 2;
