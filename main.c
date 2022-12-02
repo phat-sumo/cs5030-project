@@ -49,7 +49,7 @@ int main() {
 				}
 
 				for (int x = i - 100; x <= i + 100; x++) {
-					if (x < 0 || y >= map.width) {
+					if (x < 0 || x >= map.width) {
 						continue;
 					}
 
