@@ -1,1 +1,6 @@
-AwannaCU
+.vscode
+serial/serial
+distributed-cpu/distributed-cpu
+distributed-gpu/distributed-gpu
+shared-cpu/shared-cpu
+shared-gpu/shared-gpu
