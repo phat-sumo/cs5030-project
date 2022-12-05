@@ -150,7 +150,7 @@ int main(int argc, char* argv[]) {
 
 		fill_map(map, output, bounds_local.offset);
 
-		MPI_Send(output, bounds_local.offset, MPI_UINT32_T, 0, 1, MPI_COMM_WORLD);
+		MPI_Send(output, bounds_local.slice_size, MPI_UINT32_T, 0, 1, MPI_COMM_WORLD);
 	}
 
 	MPI_Finalize();
