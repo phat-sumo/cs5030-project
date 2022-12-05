@@ -11,8 +11,8 @@
 
 int main() {
 
-	char input_filename[] = "srtm_14_04_6000x6000_short16.raw";
-	char output_filename[] = "srtm_14_04_out_6000x6000_uint32.raw";
+	char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
+	char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
 
 	// handle file input
 	FILE* input_file = fopen(input_filename, "r");
