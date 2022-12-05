@@ -17,12 +17,16 @@ typedef struct {
 	int length;
 } Bounds;
 
-void fill_map(Map map, uint32_t* output, int startidx) {
+void fill_map(Map map, uint32_t* output, int startidx, int endidx) {
 	int starty = startidx / map.height;
 	int startx = startidx % map.height;
 
 	for (int j = starty; j < map.height; j++) {
 		for (int i = startx; i < map.width; i++) {
+			int idx = map.width * j + i;
+			if (idx > endidx) {
+				return;
+			}
 			uint32_t sum = 0; 
 
 			for (int y = j - 100; y <= j + 100; y++) {
@@ -43,7 +47,7 @@ void fill_map(Map map, uint32_t* output, int startidx) {
 			}
 
 			//printf("total [%d][%d]: %d\n", i, j, sum);
-			output[map.width * j + i - startidx] = sum;
+			output[idx - startidx] = sum;
 			
 		}
 
@@ -122,7 +126,7 @@ int main(int argc, char* argv[]) {
 			MPI_Send(map.values + b.start, b.length, MPI_SHORT, rank, 0, MPI_COMM_WORLD);
 		}
 
-		fill_map(map, output, bounds_local.offset);
+		fill_map(map, output, bounds_local.offset, bounds_local.offset + bounds_local.slice_size);
 
 		for (int rank = 1; rank < comm_size; rank++) {
 			Bounds b;
@@ -148,7 +152,7 @@ int main(int argc, char* argv[]) {
 		MPI_Recv(map.values + bounds_local.start, bounds_local.length, MPI_SHORT, 0, 0, MPI_COMM_WORLD, &status);
 		printf("%d: received message\n", my_rank);
 
-		fill_map(map, output, bounds_local.offset);
+		fill_map(map, output, bounds_local.offset, bounds_local.offset + bounds_local.slice_size);
 
 		MPI_Send(output, bounds_local.slice_size, MPI_UINT32_T, 0, 1, MPI_COMM_WORLD);
 	}
