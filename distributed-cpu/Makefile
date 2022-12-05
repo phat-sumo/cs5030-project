@@ -1,6 +1,6 @@
 # Distributed CPU Makefile
 
-CC = gcc
+CC = mpicc
 TARGET = distributed-cpu
 FLAGS = -march=native -mtune=native -O3 -flto -fomit-frame-pointer -pipe
 WARN = -Wall
