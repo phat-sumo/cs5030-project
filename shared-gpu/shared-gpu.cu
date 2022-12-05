@@ -63,7 +63,7 @@ int main() {
 	struct timespec ts_end;
 	clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
-	printf("Total elapsed time: %ld\n", (ts_end.tv_nsec - ts_start.tv_nsec) * 1000000);
+	printf("Total elapsed time: %ld\n", (ts_end.tv_sec - ts_start.tv_sec) * 1000000);
 
 	// write data back to file
 	const char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";

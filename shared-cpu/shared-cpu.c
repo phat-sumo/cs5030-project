@@ -80,7 +80,7 @@ int main() {
 
 	clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
-	printf("elapsed: %ld\n", (ts_end.tv_nsec - ts_start.tv_nsec) * 1000 * 1000);
+	printf("elapsed: %lds\n", (ts_end.tv_sec - ts_start.tv_sec));
 
 
 	// write data back to file
