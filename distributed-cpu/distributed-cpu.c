@@ -44,7 +44,7 @@ void fill_map(Map map, uint32_t* output, int startidx) {
 			}
 
 			//printf("total [%d][%d]: %d\n", i, j, sum);
-			output[map.width * j + i] = sum;
+			output[map.width * j + i - startidx] = sum;
 			
 		}
 
@@ -143,10 +143,11 @@ int main(int argc, char* argv[]) {
 		fwrite(output, sizeof(unsigned char), map_size * sizeof(uint32_t), output_file);
 		fclose(output_file);
 	} else {
-		output = malloc(sizeof(uint32_t) * bounds_local.data_count);
+		output = (uint32_t *) malloc(sizeof(uint32_t) * bounds_local.data_count);
 
 		MPI_Status status;
 		MPI_Recv(map.values + bounds_local.start, bounds_local.length, MPI_SHORT, 0, 0, MPI_COMM_WORLD, &status);
+		printf("%d: received message", my_rank);
 
 		fill_map(map, output, bounds_local.offset);
 
