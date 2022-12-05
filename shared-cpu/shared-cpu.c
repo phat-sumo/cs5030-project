@@ -44,7 +44,7 @@ int main() {
 	int i, j, x, y;
 	int my_rank, thread_count;
 	for (j = 0; j < map.height; j++) {
-#		pragma omp parallel num_threads(4) private(y, x, sum, my_rank, thread_count)
+#		pragma omp parallel private(y, x, sum, my_rank, thread_count)
 		{
 			my_rank = omp_get_thread_num();
 			thread_count = omp_get_num_threads();
