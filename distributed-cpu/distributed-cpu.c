@@ -12,7 +12,6 @@
 
 typedef struct {
 	int offset;
-	int data_count;
 	int slice_size;
 	int start;
 	int length;
@@ -143,11 +142,11 @@ int main(int argc, char* argv[]) {
 		fwrite(output, sizeof(unsigned char), map_size * sizeof(uint32_t), output_file);
 		fclose(output_file);
 	} else {
-		output = (uint32_t *) malloc(sizeof(uint32_t) * bounds_local.data_count);
+		output = (uint32_t *) malloc(sizeof(uint32_t) * bounds_local.slice_size);
 
 		MPI_Status status;
 		MPI_Recv(map.values + bounds_local.start, bounds_local.length, MPI_SHORT, 0, 0, MPI_COMM_WORLD, &status);
-		printf("%d: received message", my_rank);
+		printf("%d: received message\n", my_rank);
 
 		fill_map(map, output, bounds_local.offset);
 
