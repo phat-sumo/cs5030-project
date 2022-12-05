@@ -9,9 +9,8 @@
 #include "../common/bresenham.h"
 
 int main() {
-
-	char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
-	char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
+	const char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
+	const char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
 
 	// handle file input
 	FILE* input_file = fopen(input_filename, "r");
@@ -29,7 +28,6 @@ int main() {
 	// read in our data
 	map.values = (short*) malloc(map_size * sizeof(short));
 	fread(map.values, sizeof(short), map_size * sizeof(short), input_file);
-
 	fclose(input_file);
 
 	// set up output array as 0s
