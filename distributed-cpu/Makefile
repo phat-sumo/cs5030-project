@@ -9,8 +9,11 @@ SRC = $(TARGET).c ../common/bresenham.c ../common/bresenham.h
 build: 
 	$(CC) -o $(TARGET) $(FLAGS) $(WARN) $(LIBS) $(SRC)
 
+debug:
+	$(CC) -o $(TARGET) $(WARN) -g $(SRC)
+
 test: 
-	./$(TARGET)
+	mpiexec --use-hwthread-cpus ./$(TARGET)
 
 run: build test
 
