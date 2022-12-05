@@ -8,6 +8,8 @@
 
 #include "../common/bresenham.h"
 
+#define CLOCK_MONOTONIC 1
+
 int main() {
 	const char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
 	const char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";

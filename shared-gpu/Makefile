@@ -1,15 +1,13 @@
 # Shared GPU Makefile
-
-CC = gcc
+NVCC = nvcc
 TARGET = shared-gpu
-FLAGS = -march=native -mtune=native -O3 -flto -fomit-frame-pointer -pipe
-WARN = -Wall
-SRC = $(TARGET).c ../common/bresenham.c ../common/bresenham.h
+FLAGS = -O3 -dlto
+SRC = $(TARGET).cu
 
 build: 
-	$(CC) -o $(TARGET) $(FLAGS) $(WARN) $(LIBS) $(SRC)
+	$(NVCC) $(FLAGS) -o $(TARGET) $(SRC)
 
-test: 
+test:
 	./$(TARGET)
 
 run: build test

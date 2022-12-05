@@ -21,4 +21,4 @@ bresenham.o: Makefile ../common/bresenham.cu
 	$(NVCC) $(NVCC_FLAGS) ../common/bresenham.cu -c
 
 run:
-	mpiexec -n 4 ./$(TARGET)
+	mpiexec -n 8 ./$(TARGET)

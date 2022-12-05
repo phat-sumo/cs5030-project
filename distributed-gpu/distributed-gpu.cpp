@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
     // Broadcast cli args values to all other processes
     MPI_Bcast(&map.values, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-        int *sendcounts = new int[size];
+    int *sendcounts = new int[size];
     int *displs = new int[size];
 
     // Compute the send and displacement amounts
