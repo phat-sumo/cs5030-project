@@ -10,14 +10,9 @@
 
 #include "../common/bresenham.h"
 
-typedef struct {
-	int offset;
-	int slice_size;
-	int start;
-	int length;
-} Bounds;
+#define CLOCK_MONOTONIC 1
 
-void fill_map(Map map, uint32_t* output, int startidx, int endidx) {
+void fill_map(ElevationMap map, uint32_t* output, int startidx, int endidx) {
 	int starty = startidx / map.height;
 	int startx = startidx % map.height;
 
@@ -56,25 +51,6 @@ void fill_map(Map map, uint32_t* output, int startidx, int endidx) {
 	}
 }
 
-void get_bounds(Map map, int comm_size, int rank, Bounds *bounds) {
-	int map_size = map.width * map.height;
-
-	int normal_slice_length = map_size / comm_size;
-	int slice_remainder = map_size % comm_size;
-	// the number of extra pixels that we need on each side of a given selection
-	int extra_pixels = 100 * map.width + 100;
-
-	bounds->offset = normal_slice_length * rank + (rank < slice_remainder ? rank : slice_remainder);
-
-	bounds->slice_size = normal_slice_length + (rank < slice_remainder ? 1 : 0);
-
-	bounds->start = bounds->offset - extra_pixels;
-	bounds->start = bounds->start < 0 ? 0 : bounds->start;
-
-	bounds->length = bounds->slice_size + extra_pixels;
-	bounds->length = bounds->offset + bounds->length > map_size ? map_size - bounds->offset : bounds->length;
-}
-
 int main(int argc, char* argv[]) {
 	// char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
 	// char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
@@ -89,7 +65,7 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_size(comm, &comm_size);
 	MPI_Comm_rank(comm, &my_rank);
 
-	Map map;
+	ElevationMap map;
 	// map.width = 6000;
 	// map.height = 6000;
 	map.width = 300;

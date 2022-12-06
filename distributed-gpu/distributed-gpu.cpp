@@ -1,73 +1,131 @@
-// Distributed GPU implementation
-#include <chrono>
-#include <fstream>
-#include <iostream>
-#include <random>
+#include <cassert>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include <mpi.h>
+#include <nccl.h>
+#include <cuda_runtime.h>
 
 #include "../common/bresenham.h"
+#include "../common/cuda_bresenham.cu"
 
-int main(int argc, char **argv) {
-    // Initialize MPI
-    MPI_Init(&argc, &argv);
+#define CLOCK_MONOTONIC 1
 
-    // Get the number of processes used
-    int size;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    // Get the current process rank
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    Map map;
-	map.width = 6000;
-	map.height = 6000;
-	const int num_map_cells = map.width * map.height;
-    map.values = new short[num_map_cells];
-
-    // Parse cli args (all processes do this, so that all processes have access to these values)
-    if (rank == 0) {
-        std::fstream infile;
-        std::string input_file = "../common/srtm_14_04_6000x6000_short16.raw";
-        infile.open(input_file, std::fstream::in | std::fstream::binary);
-        infile.read((char *)&map.values[0], num_map_cells);
+// Error check function given in gpu-extra.pdf
+inline cudaError_t checkCuda(cudaError_t result) {
+    if (result != cudaSuccess) {
+        fprintf(stderr, "CUDA Runtime Error: %s\n", cudaGetErrorString(result));
+        assert(result == cudaSuccess);
     }
+    return result;
+}
 
-    // Broadcast cli args values to all other processes
-    MPI_Bcast(&map.values, 1, MPI_INT, 0, MPI_COMM_WORLD);
+int main(int argc, char** argv) {
+  // char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
+	// char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
+	char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
+	char output_filename[] = "../output/srtm_14_04_distributed_gpu_out_300x300_uint32.raw";
 
-    int *sendcounts = new int[size];
-    int *displs = new int[size];
+  // Initialize MPI
+  MPI_Init(&argc, &argv);
 
-    // Compute the send and displacement amounts
-    int sum = 0;
-    int remainder = num_map_cells % size;
-    for (int i = 0; i < size; ++i) {
-        sendcounts[i] = num_map_cells / size;
-        if (remainder > 0) {
-            sendcounts[i] += 1;
-            remainder -= 1;
-        }
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-        displs[i] = sum;
-        sum += sendcounts[i];
-    }
+  int size;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    std::chrono::system_clock::time_point start = std::chrono::high_resolution_clock::now();
+  // Initialize NCCL
+  ncclComm_t comm;
+  ncclUniqueId id;
+  ncclGetUniqueId(&id);
+  ncclCommInitRank(&comm, size, id, rank);
 
-    // Reduce each local histogram into the final result and end execution timing
-    // MPI_Reduce(local_bins, result, num_bins, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    std::chrono::system_clock::time_point stop = std::chrono::high_resolution_clock::now();
+  // const int width = 6000;
+  // const int height = 6000;
+  const int width = 300;
+  const int height = 300;
 
-    // Print results
-    if (rank == 0) {
-        for (int i = 0; i < size; i++) {
-            std::cout << "displs[" << i << "] = " << displs[i] << std::endl;
-        }
-    }
+  ElevationMap map;
+	map.width = width;
+	map.height = height;
+  const int map_size = map.width * map.height;
+  map.values = (short*) malloc(map_size * sizeof(short));
 
-    // Clean up and exit
-    MPI_Finalize();
-    return 0;
+  const dim3 grid_size(width / 16, height / 16, 1);
+  const dim3 block_size(16, 16, 1);
+
+  Bounds bounds_local;
+	get_bounds(map, size, rank, &bounds_local);
+
+  // Allocate cuda device variables
+  short* d_values = NULL;
+	uint32_t* d_output = NULL;
+  uint32_t* h_output;
+  if (rank == 0) {
+    // Open file containing elevation data
+    FILE* input_file = fopen(input_filename, "r");
+
+    if (input_file == NULL) {
+		  printf("could not open file %s\n", input_filename);
+		  return 1;
+	  }
+
+    // Read in elevation data
+    fread(map.values, sizeof(short), map_size * sizeof(short), input_file);
+    fclose(input_file);
+
+    h_output = (uint32_t*) malloc(map_size * sizeof(uint32_t));
+		memset(h_output, 0, map_size * sizeof(uint32_t));
+
+    struct timespec ts_start;
+		clock_gettime(CLOCK_MONOTONIC, &ts_start);
+
+		for (int rank = 1; rank < size; rank++) {
+			Bounds b;
+			get_bounds(map, size, rank, &b);
+			MPI_Send(map.values + b.start, b.length, MPI_SHORT, rank, 0, MPI_COMM_WORLD);
+		}
+
+    checkCuda(cudaMalloc((void **)&d_values, map_size * sizeof(short)));
+	  checkCuda(cudaMalloc((void **)&d_output, map_size * sizeof(uint32_t)));
+    checkCuda(cudaMemcpy(d_values, map.values, map_size * sizeof(short), cudaMemcpyHostToDevice));
+
+    cuda_bresenham<<<grid_size, block_size>>>(width, height, d_values, d_output);
+
+		for (int rank = 1; rank < size; rank++) {
+			Bounds b;
+			get_bounds(map, size, rank, &b);
+			MPI_Recv(h_output + b.offset, b.slice_size, MPI_UINT32_T, rank, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		}
+
+  } else {
+    h_output = (uint32_t *) malloc(sizeof(uint32_t) * bounds_local.slice_size);
+    MPI_Recv(map.values + bounds_local.start, bounds_local.length, MPI_SHORT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		printf("%d: received message\n", rank);
+
+    short* h_values = NULL;
+	  checkCuda(cudaMalloc((void **)&d_output, sizeof(uint32_t) * bounds_local.slice_size));
+    checkCuda(cudaMemcpy(d_values, h_values, map_size * sizeof(short), cudaMemcpyHostToDevice));
+
+    cuda_bresenham<<<grid_size, block_size>>>(width, height, d_values, d_output);
+
+    // Synchronize and transfer the results from the device back to the host
+    checkCuda(cudaDeviceSynchronize());
+    checkCuda(cudaMemcpy(h_output, d_output, map_size * sizeof(uint32_t), cudaMemcpyDeviceToHost));
+
+		MPI_Send(d_output, bounds_local.slice_size, MPI_UINT32_T, 0, 1, MPI_COMM_WORLD);
+  }
+
+  // Clean up
+  cudaFree(d_values);
+  cudaFree(d_output);
+  free(map.values);
+  free(h_output);
+  
+  ncclCommDestroy(comm);
+  MPI_Finalize();
+
+  return 0;
 }

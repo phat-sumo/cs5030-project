@@ -22,7 +22,7 @@ int main() {
 		return 1;
 	}
 
-	Map map;
+	ElevationMap map;
 	map.width = 6000;
 	map.height = 6000;
 	const int map_size = map.width * map.height;

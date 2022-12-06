@@ -9,6 +9,8 @@
 
 #include "../common/bresenham.h"
 
+#define CLOCK_MONOTONIC 1
+
 int main() {
 
 	char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
@@ -22,7 +24,7 @@ int main() {
 		return 1;
 	}
 
-	Map map;
+	ElevationMap map;
 	map.width = 6000;
 	map.height = 6000;
 
