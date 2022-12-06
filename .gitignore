@@ -2,6 +2,6 @@
 serial/serial
 distributed-cpu/distributed-cpu
 distributed-gpu/distributed-gpu
-distributed-gpu/bresenham.o
+distributed-gpu/distributed-gpu.o
 shared-cpu/shared-cpu
 shared-gpu/shared-gpu

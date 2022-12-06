@@ -1,5 +1,19 @@
 #include <stdint.h>
 
+typedef struct {
+	int height;
+	int width;
+
+	short* values;
+} ElevationMap;
+
+typedef struct {
+	int offset;
+	int slice_size;
+	int start;
+	int length;
+} Bounds;
+
 // Device kernel equivalent of our CPU is_visible method. Intended to be called by other kernels
 __device__ bool cuda_is_visible(int width, int height, short* d_values, int x0, int y0, int x1, int y1) {
 
@@ -70,4 +84,23 @@ __global__ void cuda_bresenham(int width, int height, short* d_values, uint32_t*
 	}
 	d_output[width * y + x] = sum;
     //printf("Value computed for cell [%d, %d]\n", x, y);
+}
+
+void get_bounds(ElevationMap map, int comm_size, int rank, Bounds *bounds) {
+	int map_size = map.width * map.height;
+
+	int normal_slice_length = map_size / comm_size;
+	int slice_remainder = map_size % comm_size;
+	// the number of extra pixels that we need on each side of a given selection
+	int extra_pixels = 100 * map.width + 100;
+
+	bounds->offset = normal_slice_length * rank + (rank < slice_remainder ? rank : slice_remainder);
+
+	bounds->slice_size = normal_slice_length + (rank < slice_remainder ? 1 : 0);
+
+	bounds->start = bounds->offset - extra_pixels;
+	bounds->start = bounds->start < 0 ? 0 : bounds->start;
+
+	bounds->length = bounds->slice_size + extra_pixels;
+	bounds->length = bounds->offset + bounds->length > map_size ? map_size - bounds->offset : bounds->length;
 }
