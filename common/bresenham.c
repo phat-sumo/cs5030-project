@@ -1,9 +1,11 @@
+// Bresenham implementation
 #include <stdbool.h>
 #include <stdlib.h>
 #include "bresenham.h"
 
+// Returns true if the considered cell is visible from the origin cell
+// Source: ADD SOURCE HERE
 bool is_visible(ElevationMap map, int x0, int y0, int x1, int y1) {
-
 	short elevation = map.values[map.width * x0 + y0];
 
 	// The absolute difference between the x and y values we're going between.
@@ -47,21 +49,18 @@ bool is_visible(ElevationMap map, int x0, int y0, int x1, int y1) {
 	}
 }
 
+// Compute the partial map bounds for a given rank
 void get_bounds(ElevationMap map, int comm_size, int rank, Bounds *bounds) {
 	int map_size = map.width * map.height;
-
 	int normal_slice_length = map_size / comm_size;
 	int slice_remainder = map_size % comm_size;
+
 	// the number of extra pixels that we need on each side of a given selection
 	int extra_pixels = 100 * map.width + 100;
-
 	bounds->offset = normal_slice_length * rank + (rank < slice_remainder ? rank : slice_remainder);
-
 	bounds->slice_size = normal_slice_length + (rank < slice_remainder ? 1 : 0);
-
 	bounds->start = bounds->offset - extra_pixels;
 	bounds->start = bounds->start < 0 ? 0 : bounds->start;
-
 	bounds->length = bounds->slice_size + extra_pixels;
 	bounds->length = bounds->offset + bounds->length > map_size ? map_size - bounds->offset : bounds->length;
 }

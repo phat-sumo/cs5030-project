@@ -1,12 +1,14 @@
+// Bresenham header
 #include <stdbool.h>
 
+// Struct that represents an elevation map input for CPU implementations
 typedef struct {
 	int height;
 	int width;
-
 	short* values;
 } ElevationMap;
 
+// Struct that helps generate process bounds for sending partial map chunks for CPU implementations
 typedef struct {
 	int offset;
 	int slice_size;
@@ -19,4 +21,5 @@ typedef struct {
 // or it finds a value larger than the starting point. 
 bool is_visible(ElevationMap map, int x0, int y0, int x1, int y1);
 
+// Compute the partial map bounds for a given rank
 void get_bounds(ElevationMap map, int comm_size, int rank, Bounds *bounds);
