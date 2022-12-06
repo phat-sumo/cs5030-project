@@ -11,17 +11,7 @@
 
 #include "../common/cuda_bresenham.cu"
 
-// Error check function given in gpu-extra.pdf
-inline cudaError_t checkCuda(cudaError_t result) {
-    if (result != cudaSuccess) {
-        fprintf(stderr, "CUDA Runtime Error: %s\n", cudaGetErrorString(result));
-        assert(result == cudaSuccess);
-    }
-    return result;
-}
-
 int main() {
-	// Open file containing elevation data
 	const char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
 	const char output_filename[] = "../output/srtm_14_04_shared_gpu_out_6000x6000_uint32.raw";
 	// const char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
@@ -34,6 +24,7 @@ int main() {
 	// const int height = 300;
 	const int num_values = width * height;
 
+	// Open file containing elevation data
 	FILE* input_file = fopen(input_filename, "r");
 
 	if (input_file == NULL) {
@@ -46,7 +37,7 @@ int main() {
 	fread(h_values, sizeof(short), num_values * sizeof(short), input_file);
 	fclose(input_file);
 
-	// Set all elements to 0
+	// Set all output elements to 0
 	uint32_t* h_output = (uint32_t*) malloc(num_values * sizeof(uint32_t));
 	memset(h_output, 0, num_values * sizeof(uint32_t));
 

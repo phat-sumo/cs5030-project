@@ -14,6 +14,15 @@ typedef struct {
 	int length;
 } Bounds;
 
+// Error check function given in gpu-extra.pdf
+inline cudaError_t checkCuda(cudaError_t result) {
+    if (result != cudaSuccess) {
+        fprintf(stderr, "CUDA Runtime Error: %s\n", cudaGetErrorString(result));
+        assert(result == cudaSuccess);
+    }
+    return result;
+}
+
 // Device kernel equivalent of our CPU is_visible method. Intended to be called by other kernels
 __device__ bool cuda_is_visible(int width, int height, short* d_values, int x0, int y0, int x1, int y1) {
 

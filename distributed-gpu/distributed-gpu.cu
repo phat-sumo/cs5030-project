@@ -10,15 +10,6 @@
 
 #define CLOCK_MONOTONIC 1
 
-// Error check function given in gpu-extra.pdf
-inline cudaError_t checkCuda(cudaError_t result) {
-    if (result != cudaSuccess) {
-        fprintf(stderr, "CUDA Runtime Error: %s\n", cudaGetErrorString(result));
-        assert(result == cudaSuccess);
-    }
-    return result;
-}
-
 int main(int argc, char** argv) {
   // Initialize MPI
   MPI_Init(&argc, &argv);
