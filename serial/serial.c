@@ -12,7 +12,7 @@
 
 int main() {
 	const char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
-	const char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
+	const char output_filename[] = "../output/srtm_14_04_serial_out_6000x6000_uint32.raw";
 
 	// handle file input
 	FILE* input_file = fopen(input_filename, "r");

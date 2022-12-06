@@ -70,7 +70,7 @@ int main() {
 	printf("Total elapsed time: %ld\n", (ts_end.tv_sec - ts_start.tv_sec) * 1000000);
 
 	// Write output data to file
-	const char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
+	const char output_filename[] = "../output/srtm_14_04_shared_gpu_out_6000x6000_uint32.raw";
 	FILE* output_file = fopen(output_filename, "w");
 	fwrite(h_output, sizeof(unsigned char), num_values * sizeof(uint32_t), output_file);
 	fclose(output_file);

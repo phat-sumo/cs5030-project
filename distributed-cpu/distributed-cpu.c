@@ -76,10 +76,10 @@ void get_bounds(Map map, int comm_size, int rank, Bounds *bounds) {
 }
 
 int main(int argc, char* argv[]) {
-	char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
-	char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
-	/* char input_filename[] = "../common/srtm_14_04_300x300_short16.raw"; */
-	/* char output_filename[] = "../common/srtm_14_04_out_300x300_uint32.raw"; */
+	// char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
+	// char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
+	char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
+	char output_filename[] = "../output/srtm_14_04_distributed_cpu_out_300x300_uint32.raw";
 
 	MPI_Init(&argc, &argv);
 	int comm_size;
@@ -90,10 +90,10 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(comm, &my_rank);
 
 	Map map;
-	map.width = 6000;
-	map.height = 6000;
-	/* map.width = 300; */
-	/* map.height = 300; */
+	// map.width = 6000;
+	// map.height = 6000;
+	map.width = 300;
+	map.height = 300;
 
 	const int map_size = map.width * map.height;
 	map.values = (short*) malloc(map_size * sizeof(short));
