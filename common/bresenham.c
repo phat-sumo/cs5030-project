@@ -4,7 +4,7 @@
 #include "bresenham.h"
 
 // Returns true if the considered cell is visible from the origin cell
-// Source: ADD SOURCE HERE
+// Source: https://gist.github.com/0xcafed00d/e6d9d50ba4371cad669475ef3a99cee6
 bool is_visible(ElevationMap map, int x0, int y0, int x1, int y1) {
 	short elevation = map.values[map.width * x0 + y0];
 

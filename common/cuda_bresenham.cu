@@ -17,7 +17,8 @@ typedef struct {
 	int length;
 } Bounds;
 
-// Error check function given in gpu-extra.pdf
+// CUDA error check function
+// Source: given in gpu-extra.pdf
 inline cudaError_t checkCuda(cudaError_t result) {
     if (result != cudaSuccess) {
         fprintf(stderr, "CUDA Runtime Error: %s\n", cudaGetErrorString(result));
@@ -28,7 +29,7 @@ inline cudaError_t checkCuda(cudaError_t result) {
 
 // Device kernel equivalent of our CPU is_visible method. Intended to be called by other kernels
 // Returns true if the considered cell is visible from the origin cell
-// Source: ADD SOURCE HERE
+// Source: https://gist.github.com/0xcafed00d/e6d9d50ba4371cad669475ef3a99cee6
 __device__ bool cuda_is_visible(int width, int height, short* d_values, int x0, int y0, int x1, int y1) {
 	short elevation = d_values[width * x0 + y0];
 

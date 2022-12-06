@@ -1,4 +1,5 @@
 // Serial implementation
+// Algorithm source: https://gist.github.com/0xcafed00d/e6d9d50ba4371cad669475ef3a99cee6
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
