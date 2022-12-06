@@ -5,3 +5,4 @@ distributed-gpu/distributed-gpu
 distributed-gpu/distributed-gpu.o
 shared-cpu/shared-cpu
 shared-gpu/shared-gpu
+validation/validate
