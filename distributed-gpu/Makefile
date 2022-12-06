@@ -10,7 +10,9 @@ build:
 	$(NVCC) $(NVCC_FLAGS) $(TARGET).cu -o $(TARGET).o
 	$(NVCC) $(TARGET).o -o $(TARGET) $(NVCC_LDFLAGS)
 
-run:
+test:
 	mpiexec -n 4 ./$(TARGET)
+
+run: build test
 
 .PHONY: build

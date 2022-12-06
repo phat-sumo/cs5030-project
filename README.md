@@ -54,7 +54,7 @@ Psuedocode:
   * To this range, add enough surrounding pixels on either side so that the 100
     pixel radius for all pixels is satisfied; this will be `width * 100 + 100`
     pixels.
-    ![An explanatory image](distributed-cpu/explanatory_image.png)
+    ![An explanatory image](visualizations/explanatory_image.png)
   * Distribute these slices to each MPI process.
 * On each MPI process:
   * For each pixel in the image, starting at the beginning of this process's
@@ -84,3 +84,11 @@ Psuedocode:
   * Collect all of the worker processes' output slices and combine them into an
     output array.
   * Write the output array to a file.
+
+# Performance study
+
+## cpu comparison
+
+## gpu comparison
+
+# Visualizations

@@ -53,7 +53,7 @@ void fill_map(ElevationMap map, uint32_t* output, int startidx, int endidx) {
 
 int main(int argc, char* argv[]) {
 	char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
-	char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
+	char output_filename[] = "../output/srtm_14_04_out_6000x6000_uint32.raw";
 	// char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
 	// char output_filename[] = "../output/srtm_14_04_distributed_cpu_out_300x300_uint32.raw";
 
