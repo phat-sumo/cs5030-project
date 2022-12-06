@@ -10,7 +10,7 @@ build:
 	$(CC) -o $(TARGET) $(FLAGS) $(WARN) $(LIBS) $(SRC)
 
 debug:
-	$(CC) -o $(TARGET) $(WARN) -g $(SRC)
+	$(CC) -o $(TARGET) $(WARN) -Og $(SRC)
 
 test: 
 	mpiexec --use-hwthread-cpus ./$(TARGET)

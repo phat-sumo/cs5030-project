@@ -1,5 +1,6 @@
 #include <stdint.h>
 
+// Device kernel equivalent of our CPU is_visible method. Intended to be called by other kernels
 __device__ bool cuda_is_visible(int width, int height, short* d_values, int x0, int y0, int x1, int y1) {
 
 	short elevation = d_values[width * x0 + y0];
@@ -45,10 +46,12 @@ __device__ bool cuda_is_visible(int width, int height, short* d_values, int x0, 
 	}
 }
 
+// Global kernel that gets an x, y coordinate and computes the bresenham line algorithm at that point
 __global__ void cuda_bresenham(int width, int height, short* d_values, uint32_t* d_output) {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
 
+	// Checks a 100 x 100 range area around coordinates (x, y) for visibility
     int sum = 0;
 	for (int col = y - 100; col <= y + 100; col++) {
 		if (col < 0 || col >= height) {

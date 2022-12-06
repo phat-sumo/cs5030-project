@@ -5,4 +5,3 @@ distributed-gpu/distributed-gpu
 distributed-gpu/bresenham.o
 shared-cpu/shared-cpu
 shared-gpu/shared-gpu
-common/*_out_*
