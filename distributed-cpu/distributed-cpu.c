@@ -78,17 +78,22 @@ void get_bounds(Map map, int comm_size, int rank, Bounds *bounds) {
 int main(int argc, char* argv[]) {
 	char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
 	char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
+	/* char input_filename[] = "../common/srtm_14_04_300x300_short16.raw"; */
+	/* char output_filename[] = "../common/srtm_14_04_out_300x300_uint32.raw"; */
 
 	MPI_Init(&argc, &argv);
 	int comm_size;
 	int my_rank;
 
-	MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
-	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+	MPI_Comm comm = MPI_COMM_WORLD;
+	MPI_Comm_size(comm, &comm_size);
+	MPI_Comm_rank(comm, &my_rank);
 
 	Map map;
 	map.width = 6000;
 	map.height = 6000;
+	/* map.width = 300; */
+	/* map.height = 300; */
 
 	const int map_size = map.width * map.height;
 	map.values = (short*) malloc(map_size * sizeof(short));
@@ -123,7 +128,7 @@ int main(int argc, char* argv[]) {
 			Bounds b;
 			get_bounds(map, comm_size, rank, &b);
 
-			MPI_Send(map.values + b.start, b.length, MPI_SHORT, rank, 0, MPI_COMM_WORLD);
+			MPI_Send(map.values + b.start, b.length, MPI_SHORT, rank, 0, comm);
 		}
 
 		fill_map(map, output, bounds_local.offset, bounds_local.offset + bounds_local.slice_size);
@@ -133,13 +138,13 @@ int main(int argc, char* argv[]) {
 			get_bounds(map, comm_size, rank, &b);
 
 			MPI_Status status;
-			MPI_Recv(map.values + b.offset, b.slice_size, MPI_UINT32_T, rank, 1, MPI_COMM_WORLD, &status);
+			MPI_Recv(output + b.offset, b.slice_size, MPI_UINT32_T, rank, 1, comm, &status);
 		}
 
 		struct timespec ts_end;
 		clock_gettime(CLOCK_MONOTONIC, &ts_end);
 
-		printf("Total elapsed time: %ld\n", (ts_end.tv_sec - ts_start.tv_sec) * 1000000);
+		printf("Total elapsed time: %ld\n", (ts_end.tv_sec - ts_start.tv_sec));
 
 		// write data back to file
 		FILE* output_file = fopen(output_filename, "w");
@@ -149,13 +154,15 @@ int main(int argc, char* argv[]) {
 		output = (uint32_t *) malloc(sizeof(uint32_t) * bounds_local.slice_size);
 
 		MPI_Status status;
-		MPI_Recv(map.values + bounds_local.start, bounds_local.length, MPI_SHORT, 0, 0, MPI_COMM_WORLD, &status);
+		MPI_Recv(map.values + bounds_local.start, bounds_local.length, MPI_SHORT, 0, 0, comm, &status);
 		printf("%d: received message\n", my_rank);
 
 		fill_map(map, output, bounds_local.offset, bounds_local.offset + bounds_local.slice_size);
 
-		MPI_Send(output, bounds_local.slice_size, MPI_UINT32_T, 0, 1, MPI_COMM_WORLD);
+		MPI_Send(output, bounds_local.slice_size, MPI_UINT32_T, 0, 1, comm);
 	}
+
+	MPI_Barrier(comm);
 
 	MPI_Finalize();
 

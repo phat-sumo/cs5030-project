@@ -69,5 +69,5 @@ __global__ void cuda_bresenham(int width, int height, short* d_values, uint32_t*
 		}
 	}
 	d_output[width * y + x] = sum;
-    printf("Value computed for cell [%d, %d]\n", x, y);
+    //printf("Value computed for cell [%d, %d]\n", x, y);
 }
