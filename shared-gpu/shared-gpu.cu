@@ -23,17 +23,23 @@ inline cudaError_t checkCuda(cudaError_t result) {
 int main() {
 	// Open file containing elevation data
 	const char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
+	const char output_filename[] = "../output/srtm_14_04_shared_gpu_out_6000x6000_uint32.raw";
+	// const char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
+	// const char output_filename[] = "../output/srtm_14_04_shared_gpu_out_300x300_uint32.raw";
+
+	// Initialize map data
+	const int width = 6000;
+	const int height = 6000;
+	// const int width = 300;
+	// const int height = 300;
+	const int num_values = width * height;
+
 	FILE* input_file = fopen(input_filename, "r");
 
 	if (input_file == NULL) {
 		printf("could not open file %s\n", input_filename);
 		return 1;
 	}
-
-	// Initialize map data
-	const int width = 6000;
-	const int height = 6000;
-	const int num_values = width * height;
 
 	// Read in elevation data
 	short* h_values = (short*) malloc(num_values * sizeof(short));
@@ -70,7 +76,6 @@ int main() {
 	printf("Total elapsed time: %ld\n", (ts_end.tv_sec - ts_start.tv_sec) * 1000000);
 
 	// Write output data to file
-	const char output_filename[] = "../output/srtm_14_04_shared_gpu_out_6000x6000_uint32.raw";
 	FILE* output_file = fopen(output_filename, "w");
 	fwrite(h_output, sizeof(unsigned char), num_values * sizeof(uint32_t), output_file);
 	fclose(output_file);

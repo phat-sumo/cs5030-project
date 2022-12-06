@@ -35,15 +35,15 @@ int main(int argc, char** argv) {
   checkCuda(cudaSetDevice(rank % num_devices));
   checkCuda(cudaFree(0));
 
-  // char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
-	// char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
-	char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
-	char output_filename[] = "../output/srtm_14_04_distributed_gpu_out_300x300_uint32.raw";
+  char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
+	char output_filename[] = "../common/srtm_14_04_out_6000x6000_uint32.raw";
+	// char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
+	// char output_filename[] = "../output/srtm_14_04_distributed_gpu_out_300x300_uint32.raw";
 
-  // const int width = 6000;
-  // const int height = 6000;
-  const int width = 300;
-  const int height = 300;
+  const int width = 6000;
+  const int height = 6000;
+  // const int width = 300;
+  // const int height = 300;
 
   ElevationMap map;
 	map.width = width;
@@ -129,7 +129,6 @@ int main(int argc, char** argv) {
     // Synchronize and transfer the results from the device back to the host
     checkCuda(cudaDeviceSynchronize());
     checkCuda(cudaMemcpy(h_output, d_output, bounds_local.slice_size * sizeof(uint32_t), cudaMemcpyDeviceToHost));
-
 
 		MPI_Send(h_output, bounds_local.slice_size, MPI_UINT32_T, 0, 1, MPI_COMM_WORLD);
   }

@@ -12,15 +12,15 @@
 #define CLOCK_MONOTONIC 1
 
 int main() {
-	// char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
-	// char output_filename[] = "../output/srtm_14_04_shared_cpu_out_6000x6000_uint32.raw";
-	char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
-	char output_filename[] = "../output/srtm_14_04_shared_cpu_out_300x300_uint32.raw";
+	char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
+	char output_filename[] = "../output/srtm_14_04_shared_cpu_out_6000x6000_uint32.raw";
+	// char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
+	// char output_filename[] = "../output/srtm_14_04_shared_cpu_out_300x300_uint32.raw";
 
-	// const int width = 6000;
-	// const int height = 6000;
-	const int width = 300;
-	const int height = 300;
+	const int width = 6000;
+	const int height = 6000;
+	// const int width = 300;
+	// const int height = 300;
 
 	// handle file input
 	FILE* input_file = fopen(input_filename, "r");

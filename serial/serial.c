@@ -13,6 +13,13 @@
 int main() {
 	const char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
 	const char output_filename[] = "../output/srtm_14_04_serial_out_6000x6000_uint32.raw";
+	// const char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
+	// const char output_filename[] = "../output/srtm_14_04_serial_out_300x300_uint32.raw";
+
+	const int width = 6000;
+	const int height = 6000;
+	// const int width = 300;
+	// const int height = 300;
 
 	// handle file input
 	FILE* input_file = fopen(input_filename, "r");
@@ -23,8 +30,8 @@ int main() {
 	}
 
 	ElevationMap map;
-	map.width = 6000;
-	map.height = 6000;
+	map.width = width;
+	map.height = height;
 	const int map_size = map.width * map.height;
 
 	// read in our data
