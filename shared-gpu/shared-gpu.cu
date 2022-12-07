@@ -1,5 +1,6 @@
 // Shared GPU implementation
 #include <cassert>
+#include <math.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -60,7 +61,7 @@ int main() {
 
 	// Compute viewshed from elevation map
 	const int thread_size = 8;
-    const dim3 grid_size(width / thread_size, height / thread_size, 1);
+    const dim3 grid_size(ceil(width / thread_size), ceil(height / thread_size), 1);
     const dim3 block_size(thread_size, thread_size, 1);
     cuda_bresenham<<<grid_size, block_size>>>(map.width, map.height, d_values, d_output);
 
