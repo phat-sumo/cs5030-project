@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <omp.h>
 
 void validate(uint32_t* a, uint32_t* b) {
 
@@ -32,7 +33,7 @@ void read_file(uint32_t* p, const char filename[]) {
 
 	if (input_file == NULL) {
 		printf("could not open file %s\n", filename);
-		exit(1);
+		return;
 	}
 
 	fread(p, sizeof(uint32_t), 6000 * 6000 * sizeof(uint32_t), input_file);
