@@ -90,6 +90,28 @@ Psuedocode:
 ## cpu comparison
 Note: although we have a working distributed-cpu implementation (tested on the smaller 300x300 dataset), we were unable to collect execution timing on the CHPC due to it being down at the time of testing. The CHPC was supposed to be back online by the afternoon of 12/6/22 (due date), but was offline into the late evening. As a compromise, we have completed a scaling study on a laptop with a 8c/16t AMD Ryzen processor and have attempted to extrapolate the distributed-cpu performance given the execution timing we have for the serial and shared-cpu implementations on the CHPC.
 
+[cpu-timing](visualizations/cpu-timing.png)
+
+We can see from this graph that the shared-cpu OpenMP implementation is
+considerably faster than the serial implementation, showing about a 5x speedup.
+The distributed-cpu OpenMPI implementation is still faster than a serial approach,
+but is slower than a shared-memory approach due to the message-passing memory
+overhead.
+
+[extrapolated-cpu-timing](visualizations/extrapolated-cpu-timing.png)
+
+We were able to compile and run our serial and shared-cpu implementations on the
+CHPC's Notchpeak cluster. The node we selected had two 40-core Intel XeonSP
+Cascadelake processors and 192GB of memory, although our approach did not heavily
+utilize the expanded memory pool. The serial approach took a whopping 63546.402s
+to complete, nearly 18 hours. The 80-core OpenMP implementation knocked that down
+to 4311.036s, or just over an hour. The result is a 14.74x speedup.
+
+We've also extrapolated a point in the graph to show about how we'd expect an
+OpenMPI implementation to perform on the same node. Of course, the major benefits
+of an OpenMPI approach would be shown as you scale the processing power up to
+include multiple nodes, exceeding our previous 80-core limit.
+
 ## gpu comparison
 Note: we were unable to get the distributed-gpu implementation working in time, this section will only cover perfomance of the shared-gpu implementation. The CHPC was supposed to be back online by the afternoon of 12/6/22 (due date), but was offline into the late evening., so we opted to use a laptop with an Nvidia RTX 3060.
 
