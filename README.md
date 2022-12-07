@@ -88,10 +88,12 @@ Psuedocode:
 # Performance study
 
 ## cpu comparison
+Note: although we have a working distributed-cpu implementation (tested on the smaller 300x300 dataset), we were unable to collect execution timing on the CHPC due to it being down at the time of testing. The CHPC was supposed to be back online by the afternoon of 12/6/22 (due date), but was offline into the late evening. As a compromise, we have completed a scaling study on a laptop with a 8c/16t AMD Ryzen processor and have attempted to extrapolate the distributed-cpu performance given the execution timing we have for the serial and shared-cpu implementations on the CHPC.
 
 ## gpu comparison
-Since we were unable to get the distributed-gpu implementation working in time, this section will only cover perfomance of the shared-gpu implementation.
-Since the CHPC was down at the time of testing, we opted to use a consumer laptop with an Nvidia RTX 3060. The primary thing tested here is the effect that
+Note: we were unable to get the distributed-gpu implementation working in time, this section will only cover perfomance of the shared-gpu implementation. The CHPC was supposed to be back online by the afternoon of 12/6/22 (due date), but was offline into the late evening., so we opted to use a laptop with an Nvidia RTX 3060.
+
+The primary thing tested here is the effect that
 different grid sizes has on the execution time of our code.
 [shared-gpu-timing](visualizations/shared-gpu-timing.png)
 As can be seen, the optimal grid size was found to be 8. Using a grid size of 4 results in a large performance loss at almost 2x the execution time compared to 8. Grid sizes of 16 and 32 performed marginally worse than 8, but identically to one another. Our best guess as to why this is the case: grid sizes that are too small result in a large number of grids to work with. Grid sizes that are too large result in fewer grids, but too much work per grid.
