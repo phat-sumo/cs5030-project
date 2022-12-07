@@ -78,6 +78,10 @@ __device__ bool cuda_is_visible(int width, int height, short* d_values, int x0, 
 __global__ void cuda_bresenham(int width, int height, short* d_values, uint32_t* d_output) {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
+	
+	if (x >= width || y >= height) {
+		return;
+	}
 
 	// Checks a 100 x 100 range area around coordinates (x, y) for visibility
     int sum = 0;
@@ -97,7 +101,7 @@ __global__ void cuda_bresenham(int width, int height, short* d_values, uint32_t*
 			}
 		}
 	}
-	d_output[width * y + x] = sum;
+	d_output[width * x + y] = sum;
 }
 
 // A reproduction of the get_bounds function in bresenham.c, however it's not very easy to mix .c and .cu files

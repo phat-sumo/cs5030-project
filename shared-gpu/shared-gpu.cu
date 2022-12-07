@@ -40,30 +40,29 @@ int main() {
   	map.values = (short*) malloc(map_size * sizeof(short));
 
 	// Read in elevation data
-	short* h_values = (short*) malloc(map_size * sizeof(short));
-	fread(h_values, sizeof(short), map_size * sizeof(short), input_file);
+	fread(map.values, sizeof(short), map_size * sizeof(short), input_file);
 	fclose(input_file);
-
-	// Set all output elements to 0
-	uint32_t* h_output = (uint32_t*) malloc(map_size * sizeof(uint32_t));
-	memset(h_output, 0, map_size * sizeof(uint32_t));
 
 	// Allocate CUDA device variables
     short* d_values = NULL;
 	uint32_t* d_output = NULL;
     checkCuda(cudaMalloc((void **)&d_values, map_size * sizeof(short)));
 	checkCuda(cudaMalloc((void **)&d_output, map_size * sizeof(uint32_t)));
-    checkCuda(cudaMemcpy(d_values, h_values, map_size * sizeof(short), cudaMemcpyHostToDevice));
+    checkCuda(cudaMemcpy(d_values, map.values, map_size * sizeof(short), cudaMemcpyHostToDevice));
 
 	// Begin execution timing
 	struct timespec ts_start;
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
 	// Compute viewshed from elevation map
-	const int thread_size = 8;
+	const int thread_size = 10;
     const dim3 grid_size(ceil(width / thread_size), ceil(height / thread_size), 1);
     const dim3 block_size(thread_size, thread_size, 1);
     cuda_bresenham<<<grid_size, block_size>>>(map.width, map.height, d_values, d_output);
+
+	// Set all output elements to 0
+	uint32_t* h_output = (uint32_t*) malloc(map_size * sizeof(uint32_t));
+	memset(h_output, 0, map_size * sizeof(uint32_t));
 
 	// Synchronize and transfer the results from the device back to the host
     checkCuda(cudaDeviceSynchronize());
@@ -80,7 +79,7 @@ int main() {
 	fclose(output_file);
 
 	// Clean up allocated variables
-	free(h_values);
+	free(map.values);
 	free(h_output);
 	cudaFree(d_values);
 	cudaFree(d_output);

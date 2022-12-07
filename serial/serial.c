@@ -70,7 +70,7 @@ int main() {
 					}
 				}
 			}
-			output[map.width * j + i] = sum;
+			output[map.width * i + j] = sum;
 		}
 		printf("Row %4d complete\n", j);
 	}
