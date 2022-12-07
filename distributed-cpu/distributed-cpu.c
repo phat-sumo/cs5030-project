@@ -52,13 +52,13 @@ int main(int argc, char* argv[]) {
 	// Process the 6000x6000 data by default
 	char input_filename[] = "../common/srtm_14_04_6000x6000_short16.raw";
 	char output_filename[] = "../output/srtm_14_04_out_6000x6000_uint32.raw";
-	// char input_filename[] = "../common/srtm_14_04_300x300_short16.raw";
-	// char output_filename[] = "../output/srtm_14_04_distributed_cpu_out_300x300_uint32.raw";
+	/* char input_filename[] = "../common/srtm_14_04_300x300_short16.raw"; */
+	/* char output_filename[] = "../output/srtm_14_04_distributed_cpu_out_300x300_uint32.raw"; */
 
 	const int width = 6000;
 	const int height = 6000;
-	// const int width = 300;
-	// const int height = 300;
+	/* const int width = 300; */
+	/* const int height = 300; */
 
 	// Initialize MPI with size and rank
 	MPI_Init(&argc, &argv);
@@ -126,10 +126,19 @@ int main(int argc, char* argv[]) {
 		clock_gettime(CLOCK_MONOTONIC, &ts_end);
 		printf("Total elapsed time: %ld\n", (ts_end.tv_sec - ts_start.tv_sec));
 
+		uint32_t* out = (uint32_t*) malloc(map_size * sizeof(uint32_t));
+
+		for (int i = 0; i < map.width; i++) {
+			for (int j = 0; j < map.height; j++) {
+				out[map.width * i + j] = output[map.height * j + i];
+			}
+		}
+
 		// Write output data to file
 		FILE* output_file = fopen(output_filename, "w");
-		fwrite(output, sizeof(unsigned char), map_size * sizeof(uint32_t), output_file);
+		fwrite(out, sizeof(unsigned char), map_size * sizeof(uint32_t), output_file);
 		fclose(output_file);
+		free(out);
 	} else {
 		// Allocate partial output
 		output = (uint32_t *) malloc(sizeof(uint32_t) * bounds_local.slice_size);
