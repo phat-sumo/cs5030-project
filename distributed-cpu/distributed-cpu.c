@@ -20,7 +20,7 @@ void fill_map(ElevationMap map, uint32_t* output, int startidx, int endidx) {
 	// Compute the partial viewshed from elevation map
 	for (int j = starty; j < map.height; j++) {
 		for (int i = startx; i < map.width; i++) {
-			int idx = map.width * j + i;
+			int idx = map.width * i + j;
 			if (idx > endidx) {
 				return;
 			}
