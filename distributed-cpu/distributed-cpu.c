@@ -106,8 +106,9 @@ int main(int argc, char* argv[]) {
 		// Distribute elevation data across MPI processes
 		for (int rank = 1; rank < comm_size; rank++) {
 			Bounds b;
-			get_bounds(map, comm_size, rank, &b);
-			MPI_Send(map.values + b.start, b.length, MPI_SHORT, rank, 0, comm);
+			// get_bounds(map, comm_size, rank, &b);
+			// MPI_Send(map.values + b.start, b.length, MPI_SHORT, rank, 0, comm);
+			MPI_Send(map.values, map_size, MPI_SHORT, rank, 0, comm);
 		}
 
 		// Compute partial viewshed from elevation map
@@ -134,7 +135,8 @@ int main(int argc, char* argv[]) {
 		output = (uint32_t *) malloc(sizeof(uint32_t) * bounds_local.slice_size);
 
 		// Recieve partial map values from rank 0
-		MPI_Recv(map.values + bounds_local.start, bounds_local.length, MPI_SHORT, 0, 0, comm, MPI_STATUS_IGNORE);
+		// MPI_Recv(map.values + bounds_local.start, bounds_local.length, MPI_SHORT, 0, 0, comm, MPI_STATUS_IGNORE);
+		MPI_Recv(map.values, map_size, MPI_SHORT, 0, 0, comm, MPI_STATUS_IGNORE);
 		printf("%d: received message\n", my_rank);
 
 		// Compute partial viewshed from elevation map
