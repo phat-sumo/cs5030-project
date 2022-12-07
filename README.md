@@ -92,3 +92,31 @@ Psuedocode:
 ## gpu comparison
 
 # Visualizations
+
+To visualize the raw files, including input as and results, we used both ImageJ
+and Paraview. What follows is a JPEG version of the input file, exported from
+ImageJ:
+
+![The input file](visualizations/6000x6000_input.jpg)
+
+Once we produced an output file from the serial implementation we also created
+a JPEG export of that. The outputs from the parallel implementations looked
+exactly the same, predictably, so the following image can be considered our
+generalized output:
+
+![The output file](visualizations/6000x6000_output.jpg)
+
+During the course of testing, we took a 300x300 sample of the dataset for the
+purposes of quicker testing. Here's that file:
+
+![The short input file](visualizations/300x300_input.jpg)
+
+And here's the output it produced, which was very similar to the portion of the
+output that it rightly should have been:
+
+![The short output file](visualizations/300x300_output.jpg)
+
+We also wanted to get a side-by-side of the input and the output. For that
+purpose we used Paraview to produce this nice visualization:
+
+![Paraview my beloved](visualizations/6000x6000_paraview.png)
