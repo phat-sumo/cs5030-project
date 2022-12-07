@@ -90,6 +90,11 @@ Psuedocode:
 ## cpu comparison
 
 ## gpu comparison
+Since we were unable to get the distributed-gpu implementation working in time, this section will only cover perfomance of the shared-gpu implementation.
+Since the CHPC was down at the time of testing, we opted to use a consumer laptop with an Nvidia RTX 3060. The primary thing tested here is the effect that
+different grid sizes has on the execution time of our code.
+[shared-gpu-timing](visualizations/shared-gpu-timing.png)
+As can be seen, the optimal grid size was found to be 8. Using a grid size of 4 results in a large performance loss at almost 2x the execution time compared to 8. Grid sizes of 16 and 32 performed marginally worse than 8, but identically to one another. Our best guess as to why this is the case: grid sizes that are too small result in a large number of grids to work with. Grid sizes that are too large result in fewer grids, but too much work per grid.
 
 # Visualizations
 
