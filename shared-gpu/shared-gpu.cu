@@ -59,8 +59,9 @@ int main() {
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
 	// Compute viewshed from elevation map
-    const dim3 grid_size(width / 16, height / 16, 1);
-    const dim3 block_size(16, 16, 1);
+	const int thread_size = 8;
+    const dim3 grid_size(width / thread_size, height / thread_size, 1);
+    const dim3 block_size(thread_size, thread_size, 1);
     cuda_bresenham<<<grid_size, block_size>>>(map.width, map.height, d_values, d_output);
 
 	// Synchronize and transfer the results from the device back to the host
