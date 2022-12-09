@@ -113,13 +113,13 @@ of an OpenMPI approach would be shown as you scale the processing power up to
 include multiple nodes, exceeding our previous 80-core limit.
 
 ## gpu comparison
-Note: we were unable to get the distributed-gpu implementation working in time, this section will only cover perfomance of the shared-gpu implementation. The CHPC was supposed to be back online by the afternoon of 12/6/22 (due date), but was offline into the late evening., so we opted to use a laptop with an Nvidia RTX 3060.
+The primary things we tested here were the effect that different grid and data sizes have on the execution time of our code.
 
-The primary thing tested here is the effect that different grid sizes has on the execution time of our code.
+![shared-gpu-timing](visualizations/shared-gpu-timing-300.png)
 
-![shared-gpu-timing](visualizations/shared-gpu-timing.png)
+![shared-gpu-timing](visualizations/shared-gpu-timing-6000.png)
 
-As can be seen, the optimal grid size was found to be 8. Using a grid size of 4 results in a large performance loss at almost 2x the execution time compared to 8. Grid sizes of 16 and 32 performed marginally worse than 8, but identically to one another. Our best guess as to why this is the case: grid sizes that are too small result in a large number of grids to work with. Grid sizes that are too large result in fewer grids, but too much work per grid.
+As can be seen, the optimal grid size was found to be between 8 and 16 for both the 300x300 and 6000x6000 datasets. Using a grid size of 4 results in a large performance loss at almost 2x the execution time compared to 8. Grid sizes of 32 performed marginally worse than 8-16, while grid sizes larger than 32 resulted in failed kernel launches. Our best guess as to why this is the case: grid sizes that are too small result in a small number of work to perform per grid. Grid sizes that are too large result in fewer grids, but too much work per grid.
 
 # Visualizations
 
