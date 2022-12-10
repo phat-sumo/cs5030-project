@@ -4,6 +4,7 @@
 2. `make` then `make run`
    * This should run the program with the maximum number of threads your system
      supports; if this behavior is not desired, modify the Makefile.
+3. Make sure the `output` directory exists, or a segfault will occur when writing the output.
 
 # Descriptions
 
