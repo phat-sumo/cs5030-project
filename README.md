@@ -94,7 +94,7 @@ The distributed-cpu OpenMPI implementation is still faster than a serial approac
 but is slower than a shared-memory approach due to the message-passing memory
 overhead.
 
-![cpu-timing](visualizations/cpu-implementation-timing)
+![cpu-timing](visualizations/cpu-implementation-timing.png)
 
 We were able to compile and run our serial and shared-cpu implementations on the
 CHPC's Notchpeak cluster. The node we selected had two 40-core Intel XeonSP
